@@ -1,5 +1,6 @@
 defmodule Nerves.Network.IFSupervisor do
   use Supervisor
+  import Nerves.Network.Utils, only: [log_atomized_iface_error: 1]
 
   @moduledoc false
 
@@ -12,6 +13,7 @@ defmodule Nerves.Network.IFSupervisor do
   end
 
   def setup(ifname, settings) when is_atom(ifname) do
+    log_atomized_iface_error(ifname)
     setup(to_string(ifname), settings)
   end
 
@@ -38,7 +40,10 @@ defmodule Nerves.Network.IFSupervisor do
     end
   end
 
-  def scan(ifname) when is_atom(ifname), do: scan(to_string(ifname))
+  def scan(ifname) when is_atom(ifname) do
+    log_atomized_iface_error(ifname)
+    scan(to_string(ifname))
+  end
 
   def scan(ifname) do
     with pid when is_pid(pid) <- Process.whereis(pname(ifname)),
